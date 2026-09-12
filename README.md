@@ -31,11 +31,6 @@ The first time you run it, use `/init` to analyze your project and generate an
 `AGENTS.md` with the project rules, and `/connect` to configure your LLM
 provider API key.
 
-## Resources
-
-- Documentation: https://opencode.ai/docs
-- Repository: https://github.com/FerGutierrez2020/opencode
-
 ## Slash commands reference (visual)
 
 ![opencode slash commands reference](opencode-slash-commands.png)
