@@ -31,10 +31,6 @@ The first time you run it, use `/init` to analyze your project and generate an
 `AGENTS.md` with the project rules, and `/connect` to configure your LLM
 provider API key.
 
-## Slash commands reference (visual)
-
-![opencode slash commands reference](opencode-slash-commands.png)
-
 ---
 
 *Author: Fer Gutierrez, SageITTraining using OpenCode*
