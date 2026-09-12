@@ -10,6 +10,7 @@ opencode both from the terminal and from Visual Studio Code.
 |------|-------------|
 | `guia-instalacion-y-ejecucion-opencode.md` | Spanish guide with full instructions to install and run opencode on Ubuntu 20.04 (tested on a 2 vCPU / 3.8 GiB RAM VM), including LLM provider authentication and VS Code integration. |
 | `setup-github-repo-opencode.txt` | English guide explaining how to create a GitHub repository and manage it from the terminal with opencode. |
+| `opencode-slash-commands.txt` | Reference of all `/` slash commands available in the opencode TUI (aliases, descriptions, keybinds) plus how to create custom commands. |
 
 ## Quick start
 
@@ -34,3 +35,7 @@ provider API key.
 
 - Documentation: https://opencode.ai/docs
 - Repository: https://github.com/FerGutierrez2020/opencode
+
+## Slash commands reference (visual)
+
+![opencode slash commands reference](opencode-slash-commands.png)
