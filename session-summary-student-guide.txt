@@ -1,0 +1,383 @@
+==================================================
+DEVELOPMENT SESSION SUMMARY - WORKING WITH OPENCODE,
+GIT AND GITHUB
+==================================================
+
+Audience : development students
+Goal     : understand, step by step, all the work performed in this
+           repository and the exact commands used, so the workflow can
+           be reproduced and learned.
+
+--------------------------------------------------
+TABLE OF CONTENTS
+--------------------------------------------------
+1. Project overview
+2. Tools used
+3. The Git/GitHub workflow in one sentence
+4. Task 1 - Check the repository state
+5. Task 2 - Create and push a guide (TXT file)
+6. Task 3 - Create and push a README
+7. Task 4 - Research and create the slash commands reference
+8. Task 5 - Generate an image from a text file
+9. Task 6 - Embed the image and add the author
+10. Task 7 - Clean up the README (remove a section)
+11. Final repository structure
+12. Full commit history
+13. Git cheat-sheet used in this session
+14. Good practices for students
+15. Troubleshooting tips
+16. References
+
+--------------------------------------------------
+1. PROJECT OVERVIEW
+--------------------------------------------------
+Repository : https://github.com/FerGutierrez2020/opencode.git
+Branch     : master (default branch)
+Purpose    : a small documentation repository created with the AI coding
+             agent "opencode". It contains guides about opencode itself:
+
+  - guia-instalacion-y-ejecucion-opencode.md
+        Spanish guide: install and run opencode on Ubuntu 20.04.
+  - setup-github-repo-opencode.txt
+        English guide: create a GitHub repository with opencode.
+  - opencode-slash-commands.txt
+        All "/" slash commands available in the opencode TUI.
+  - opencode-slash-commands.png
+        A picture rendered from the slash-commands text file.
+  - README.md
+        Index page of the repository (the file shown on GitHub).
+
+The session shows a complete, realistic workflow:
+research -> create content -> edit -> review -> commit -> push, using
+the terminal and GitHub.
+
+--------------------------------------------------
+2. TOOLS USED
+--------------------------------------------------
+Tool       | Used for
+-----------|----------------------------------------------------
+Terminal   | Running every command in this document
+Git        | Version control (track changes, commits, push)
+GitHub     | Hosting the remote repository
+opencode   | The AI agent that wrote the content and the code
+Python 3   | Scripting the image generation (PIL/Pillow)
+Pillow     | Python library to draw text into a PNG image
+ImageMagick| (checked but not needed; PIL was used instead)
+Web        | Reading the official opencode documentation
+
+--------------------------------------------------
+3. THE GIT/GITHUB WORKFLOW IN ONE SENTENCE
+--------------------------------------------------
+   edit files -> git status (review) -> git add (stage)
+   -> git commit -m (record) -> git push (send to GitHub)
+
+Every task in this session followed that cycle. Always check
+`git status` BEFORE committing, so you only stage the files you intend.
+
+--------------------------------------------------
+4. TASK 1 - CHECK THE REPOSITORY STATE
+--------------------------------------------------
+Command:
+  git status
+
+Result:
+  On branch master
+  Your branch is up to date with 'origin/master'.
+  nothing to commit, working tree clean
+
+Explanation:
+  - "On branch master"          -> we are on the default branch.
+  - "up to date with origin"    -> local and remote are synchronized.
+  - "nothing to commit"         -> no modified/staged files.
+  - "working tree clean"        -> no untracked files.
+
+Useful variants:
+  git status                 # full status
+  git status --short         # compact output (-s)
+  git remote -v              # show the remote URL(s) of the repo
+  git log --oneline -10      # show the last 10 commits (one line each)
+
+--------------------------------------------------
+5. TASK 2 - CREATE AND PUSH A GUIDE (TXT FILE)
+--------------------------------------------------
+Goal : write instructions on how to set up a GitHub repository using
+       opencode, save them in a TXT file and publish the file.
+
+Step 5.1 - Write the file
+  The content was written directly into the file:
+    setup-github-repo-opencode.txt
+
+Step 5.2 - Review what changed
+  git status
+  # should show:  ?? setup-github-repo-opencode.txt
+  # "??" means the file is UNTRACKED (new, not yet in Git).
+
+Step 5.3 - Add, commit and push in one command chain
+  git add setup-github-repo-opencode.txt
+  git commit -m "Add setup guide for GitHub repository using opencode"
+  git push
+
+  Explanation:
+  - git add            -> put the file into the "staging area".
+  - git commit -m ...  -> record the change with a descriptive message.
+  - git push           -> upload local commits to the remote (GitHub).
+
+Resulting commit:
+  32de414  Add setup guide for GitHub repository using opencode
+
+--------------------------------------------------
+6. TASK 3 - CREATE AND PUSH A README
+--------------------------------------------------
+Goal : create README.md, the main page of the repository, and publish it.
+
+Step 6.1 - Create README.md
+  A README explains what the project is and what it contains. Markdown
+  (.md) is used because GitHub renders it nicely.
+
+Step 6.2 - Push it
+  git add README.md
+  git commit -m "Add project README"
+  git push
+
+Resulting commit:
+  820af82  Add project README
+
+--------------------------------------------------
+7. TASK 4 - RESEARCH AND CREATE THE SLASH COMMANDS REFERENCE
+--------------------------------------------------
+Goal : create a complete TXT reference of every "/" command available
+       inside the opencode terminal interface (TUI).
+
+Step 7.1 - Research the official documentation
+  The official pages were consulted:
+    https://opencode.ai/docs/tui
+    https://opencode.ai/docs/commands
+    https://opencode.ai/docs/cli
+  (Read by the AI agent with a web-fetch tool; students can simply open
+  those URLs in a browser.)
+
+Step 7.2 - Write opencode-slash-commands.txt
+  The document lists every built-in slash command (/help, /new, /undo,
+  /redo, /compact, /connect, /models, /sessions, /share, /unshare,
+  /export, /themes, /editor, /init, /details, /thinking, /exit) with
+  aliases, purpose and keyboard shortcuts, plus how to create custom
+  commands.
+
+Step 7.3 - Publish it
+  git add opencode-slash-commands.txt
+  git commit -m "Add slash commands reference for opencode"
+  git push
+
+Resulting commit:
+  9c4712d  Add slash commands reference for opencode
+
+--------------------------------------------------
+8. TASK 5 - GENERATE AN IMAGE FROM A TEXT FILE
+--------------------------------------------------
+Goal : turn the TXT file (opencode-slash-commands.txt) into a picture
+       (PNG), so the reference can be shared as an image.
+
+Step 8.1 - Check which tools are installed on the system
+  which convert magick python3 pandoc wkhtmltoimage
+  python3 -c "import PIL; print('PIL ok')"
+  Result: "convert" (ImageMagick) and Python + PIL are available.
+
+Step 8.2 - Choose a monospaced font that exists on the system
+  fc-list | grep -iE "mono|dejavu-sans-mono|liberation"
+  Result example: DejaVu Sans Mono -> /usr/share/fonts/truetype/
+                  dejavu/DejaVuSansMono.ttf  (+ a Bold variant)
+
+Step 8.3 - Write a Python script with Pillow
+  The script (render_slash.py, run from /tmp/opencode/):
+    - reads the TXT file line by line,
+    - wraps long lines so nothing is cut off,
+    - draws a dark "terminal window" background with a title bar,
+    - prints each line in a monospaced font,
+    - colors sections (yellow headings), commands (cyan),
+      usage/keybinds (green) and command names (magenta),
+    - saves the result as opencode-slash-commands.png.
+
+  Key Pillow concepts used (good to study):
+    from PIL import Image, ImageDraw, ImageFont
+    Image.new("RGB", (width, height), color)   # blank canvas
+    ImageDraw.Draw(image)                      # drawing context
+    ImageFont.truetype(path, size)             # load a font
+    draw.rectangle(...) / draw.ellipse(...)    # shapes
+    draw.text((x, y), text, font=..., fill=...) # text
+
+Step 8.4 - Run the script
+  python3 /tmp/opencode/render_slash.py
+  Output:
+    saved .../opencode-slash-commands.png 1038x6295
+
+--------------------------------------------------
+9. TASK 6 - EMBED THE IMAGE AND ADD THE AUTHOR
+--------------------------------------------------
+Goal : show the image at the end of README.md and credit the author.
+
+Step 9.1 - Reference the image in README.md
+  Added at the end of README.md:
+    ## Slash commands reference (visual)
+
+    ![opencode slash commands reference](opencode-slash-commands.png)
+
+  Markdown syntax for images:
+    ![alternative text displayed when image is missing](file.png)
+
+Step 9.2 - Add the author attribution
+  Added at the very end:
+    ---
+    *Author: Fer Gutierrez, SageITTraining using OpenCode*
+
+Step 9.3 - Commit and push both files
+  git add README.md opencode-slash-commands.png opencode-slash-commands.txt
+  git commit -m "Embed slash commands reference image in README"
+  git push
+
+  Note: the PNG and the TXT were included in the same commit because the
+  image belongs together with the reference. Stage only what is needed.
+
+Resulting commit:
+  71bc6f9  Embed slash commands reference image in README
+
+Step 9.4 - Commit the author attribution
+  git add README.md
+  git commit -m "Add author attribution to README"
+  git push
+
+Resulting commit:
+  8587b3c  Add author attribution to README
+
+--------------------------------------------------
+10. TASK 7 - CLEAN UP THE README (REMOVE A SECTION)
+--------------------------------------------------
+Goal : remove the "Slash commands reference (visual)" section from
+       README.md because it was considered unnecessary.
+
+Step 10.1 - Check if any "Reference" text remains / inspect history
+  grep -niE "reference|referencia|resource" README.md
+  git show 2751f66 --stat        # see what the last cleanup changed
+  git show 2751f66               # see the exact diff of that commit
+
+Step 10.2 - Edit README.md
+  The "## Slash commands reference (visual)" heading and the image line
+  below it were deleted with a text editor. The author line was kept.
+
+Step 10.3 - Commit and push the cleanup
+  git add README.md
+  git commit -m "Remove slash commands reference section from README"
+  git push
+
+Resulting commit:
+  ed0ae1d  Remove slash commands reference section from README
+
+What was NOT deleted: the files opencode-slash-commands.txt and
+opencode-slash-commands.png still exist in the repository. Deleting one
+line from the README does NOT delete any file.
+
+--------------------------------------------------
+11. FINAL REPOSITORY STRUCTURE
+--------------------------------------------------
+Run this to see it live:
+  ls -la
+
+  README.md                                project index page
+  guia-instalacion-y-ejecucion-opencode.md Spanish opencode guide
+  setup-github-repo-opencode.txt           GitHub setup guide
+  opencode-slash-commands.txt              slash commands reference
+  opencode-slash-commands.png              image rendered from the TXT
+
+--------------------------------------------------
+12. FULL COMMIT HISTORY
+--------------------------------------------------
+Command:
+  git log --oneline        # or --oneline --reverse to go from oldest
+
+  1. d5c4fd2  initial commit
+  2. 32de414  Add setup guide for GitHub repository using opencode
+  3. 820af82  Add project README
+  4. 9c4712d  Add slash commands reference for opencode
+  5. 71bc6f9  Embed slash commands reference image in README
+  6. 8587b3c  Add author attribution to README
+  7. 2751f66  Remove Resources section from README
+  8. ed0ae1d  Remove slash commands reference section from README
+
+Analyze any commit:
+  git show <commit-id>        # changes + metadata
+  git show <commit-id> --stat # files changed, without the full diff
+
+--------------------------------------------------
+13. GIT CHEAT-SHEET USED IN THIS SESSION
+--------------------------------------------------
+  git status                  # see current state
+  git status --short          # compact state
+  git remote -v               # show remote repository URL
+  git log --oneline           # list commits (short)
+  git log --oneline --reverse # list commits from oldest to newest
+  git show <commit>           # inspect one commit in detail
+  git show <commit> --stat    # only which files changed
+  git diff                    # see pending changes (unstaged)
+  git add <file>              # stage a file
+  git add .                   # stage all changes (use with care)
+  git commit -m "message"     # commit staged changes
+  git push                    # upload commits to the remote
+  git branch -M main          # rename the branch to "main"
+
+Command chains (allowed and useful):
+  git add file && git commit -m "msg" && git push
+  # && runs the next command only if the previous one succeeded.
+  # If the commit fails (e.g. missing message), the push is NOT run.
+
+--------------------------------------------------
+14. GOOD PRACTICES FOR STUDENTS
+--------------------------------------------------
+1. Commit small, logical units - one feature per commit.
+2. Write clear commit messages that explain WHAT and WHY.
+3. Always run `git status` before `git add` and review with `git diff`.
+4. Do not commit secrets: API keys, tokens, passwords. Use a .gitignore
+   file (e.g. ignore .env, node_modules/, dist/).
+5. Use a README to explain the project and a .gitignore to protect it.
+6. Only push when you are sure the changes are correct.
+7. Keep documentation consistent: same language, same style, same
+   structure across files.
+8. Test your scripts before committing them (here: run the generator
+   and check the PNG is created before pushing it).
+
+--------------------------------------------------
+15. TROUBLESHOOTING TIPS
+--------------------------------------------------
+Problem: "git push" asks for credentials.
+  -> Authenticate once: install GitHub CLI (`gh auth login`) or use a
+     Personal Access Token / SSH key (see setup guide in the repo).
+
+Problem: "nothing to commit, working tree clean" but you wrote a file.
+  -> The file might be ignored (check .gitignore) or you edited it
+     OUTSIDE the repository folder. Run `ls` and `git status --short`.
+
+Problem: commit succeeded but you cannot see it on GitHub.
+  -> Run `git push` again and check output; the branch must be uploaded:
+     `git push -u origin master`.
+
+Problem: text was cut in the generated image.
+  -> Increase the line wrapping width in the Python script (MAXW) or
+     reduce the font size.
+
+Problem: the image does not render in the README on GitHub.
+  -> The image must exist in the repository and the path in the
+     markdown `![alt](path)` must match exactly (case-sensitive).
+
+--------------------------------------------------
+16. REFERENCES
+--------------------------------------------------
+- opencode documentation :  https://opencode.ai/docs
+- opencode TUI commands  :  https://opencode.ai/docs/tui
+- opencode CLI           :  https://opencode.ai/docs/cli
+- Git documentation      :  https://git-scm.com/doc
+- GitHub docs            :  https://docs.github.com
+- Pillow (Python)        :  https://pillow.readthedocs.io
+
+------
+Summary: 3 content or support files created, 1 image generated, 1 README
+created and edited, 8 commits, everything pushed to:
+https://github.com/FerGutierrez2020/opencode
+------
