@@ -1,0 +1,80 @@
+HOW TO SET UP A GITHUB REPOSITORY USING OPENCODE
+=================================================
+
+This guide walks you through creating a new GitHub repository and
+managing it from your terminal using opencode (an AI coding agent CLI).
+
+------------------------------------------------------------
+1. PREREQUISITES
+------------------------------------------------------------
+- Git installed:            git --version
+- GitHub account created:   https://github.com
+- Git authenticated with GitHub (HTTPS or SSH):
+      HTTPS:  gh auth login   (GitHub CLI)   OR store a Personal Access Token
+      SSH:    ssh-keygen -t ed25519 -C "you@example.com"
+              ssh-add ~/.ssh/id_ed25519
+              gh ssh-key add ~/.ssh/id_ed25519.pub --title "my-key"
+
+------------------------------------------------------------
+2. INSTALL OPENCODE
+------------------------------------------------------------
+Install the opencode CLI. See https://opencode.ai for the latest
+instructions, for example:
+      curl -fsSL https://opencode.ai/install | bash
+Then verify:
+      opencode --version
+
+------------------------------------------------------------
+3. CREATE THE REPOSITORY ON GITHUB
+------------------------------------------------------------
+Create a new (empty) repository on GitHub either in the web UI
+(https://github.com/new) or from the terminal:
+      gh repo create my-project --private --source=. --remote=origin --push
+
+------------------------------------------------------------
+4. SET UP THE LOCAL REPOSITORY
+------------------------------------------------------------
+Inside your project folder run:
+      git init                                # initialize the repo
+      git add .                               # stage all files
+      git commit -m "Initial commit"          # first commit
+      git branch -M main                      # use 'main' as default branch
+      git remote add origin https://github.com/<USER>/<REPO>.git
+      git push -u origin main                 # push and set upstream
+
+------------------------------------------------------------
+5. USE OPENCODE FOR DEVELOPMENT
+------------------------------------------------------------
+Open the project with opencode:
+      opencode
+
+Then ask opencode to perform tasks, e.g.:
+  "Create a README.md explaining this project"
+  "Write tests for the main module"
+  "Fix the bug in src/main.js"
+
+Tip: add an AGENTS.md file so opencode knows your project conventions
+and the lint/test commands you want it to run:
+      opencode instruct     # generate an AGENTS.md in the current repo
+
+------------------------------------------------------------
+6. COMMIT AND PUSH WORK DONE WITH OPENCODE
+------------------------------------------------------------
+opencode will apply the changes to your working tree. Review them,
+then commit and push (either yourself or ask opencode):
+      git status
+      git diff
+      git add .
+      git commit -m "Add feature via opencode"
+      git push
+
+------------------------------------------------------------
+7. HOUSEKEEPING / GOTCHAS
+------------------------------------------------------------
+- Use a .gitignore so build artifacts and secrets are never pushed
+  (e.g. node_modules/, .env, dist/).
+- Never commit API keys or tokens.
+- If you cloned an existing repo instead of creating one, skip step 3
+  and use the existing remote (git remote -v).
+- To make opencode push for you, you must explicitly say so; opencode
+  never commits or pushes unless you ask it to.
