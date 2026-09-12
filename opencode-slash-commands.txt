@@ -1,0 +1,240 @@
+OPencode SLASH COMMANDS REFERENCE
+=================================
+All possible "/" commands available in the OpenCode TUI, with their
+aliases, descriptions and default keyboard shortcuts (leader key: ctrl+x).
+
+Source: official OpenCode documentation (opencode.ai/docs/tui,
+opencode.ai/docs/commands, opencode.ai/docs/cli) and related community
+references, correct for the current stable version (1.x).
+
+------------------------------------------------------------
+1. BUILT-IN SLASH COMMANDS
+------------------------------------------------------------
+
+COMMAND: /help
+PURPOSE: Show the help dialog with all available commands.
+USAGE:   /help
+
+COMMAND: /new
+ALIASES: /clear
+PURPOSE: Start a new conversation session. Clears the current context and
+         begins fresh. Useful to start a different task or reset context to
+         reduce token usage.
+KEYBIND: ctrl+x n
+USAGE:   /new
+
+COMMAND: /undo
+PURPOSE: Undo the last message in the conversation. Removes the most recent
+         user message, all subsequent responses, and reverts any file changes
+         made. Internally uses Git, so the project MUST be a Git repository.
+KEYBIND: ctrl+x u
+USAGE:   /undo
+
+COMMAND: /redo
+PURPOSE: Redo a previously undone message. Only available after using /undo.
+         Restores the message and any file changes. Requires a Git repository.
+KEYBIND: ctrl+x r
+USAGE:   /redo
+
+COMMAND: /compact
+ALIASES: /summarize
+PURPOSE: Compact/summarize the current session to reduce context and token
+         usage while keeping the important information.
+KEYBIND: ctrl+x c
+USAGE:   /compact
+
+COMMAND: /connect
+PURPOSE: Add an LLM/AI provider to OpenCode. Lets you select from available
+         providers (opencode, OpenAI, Anthropic, etc.) and add/store their API
+         keys. Authenticates the provider.
+USAGE:   /connect
+
+COMMAND: /models
+PURPOSE: List all available AI models from your configured providers (shown in
+         provider/model format). Lets you switch/select the model to use and
+         compare what each provider offers.
+KEYBIND: ctrl+x m
+USAGE:   /models
+
+COMMAND: /sessions
+ALIASES: /resume, /continue
+PURPOSE: List all conversation sessions and switch between them. Useful for
+         context switching, reviewing history, and managing multiple tasks.
+KEYBIND: ctrl+x l
+USAGE:   /sessions
+
+COMMAND: /share
+PURPOSE: Share the current session by creating a public link you can send to
+         collaborate or show the conversation to others.
+USAGE:   /share
+
+COMMAND: /unshare
+PURPOSE: Unshare the current session, removing the public share link created
+         with /share.
+USAGE:   /unshare
+
+COMMAND: /export
+PURPOSE: Export the current conversation to Markdown and open it in your
+         default editor (set via the EDITOR environment variable).
+KEYBIND: ctrl+x x
+USAGE:   /export
+
+COMMAND: /themes
+PURPOSE: List the available color themes for the TUI interface and switch
+         between them.
+KEYBIND: ctrl+x t
+USAGE:   /themes
+
+COMMAND: /editor
+PURPOSE: Open an external editor (from the EDITOR environment variable) to
+         compose messages. Good for long or multi-line prompts.
+KEYBIND: ctrl+x e
+USAGE:   /editor
+
+COMMAND: /init
+PURPOSE: Guided setup that analyzes your project and creates or updates the
+         AGENTS.md file with the project rules and conventions. Recommended
+         to run the first time in a project and to save AGENTS.md in Git.
+         Equivalent CLI command: opencode init.
+KEYBIND: ctrl+x i
+USAGE:   /init
+
+COMMAND: /details
+PURPOSE: Toggle the display of tool execution details in the conversation.
+USAGE:   /details
+
+COMMAND: /thinking
+PURPOSE: Toggle the visibility of thinking/reasoning blocks in the conversation.
+         When enabled you can see the model's reasoning for models that support
+         extended thinking. NOTE: only controls DISPLAY, not the model's actual
+         reasoning; use ctrl+t to cycle model variants and toggle reasoning.
+USAGE:   /thinking
+
+COMMAND: /exit
+ALIASES: /quit, /q
+PURPOSE: Exit OpenCode.
+KEYBIND: ctrl+x q
+USAGE:   /exit
+
+------------------------------------------------------------
+2. CUSTOM SLASH COMMANDS
+------------------------------------------------------------
+
+Custom commands turn a named prompt template into a slash command:
+type /<name> followed by any arguments, e.g.  /review src/auth
+
+They are defined in the "commands/" directories:
+- Global:  ~/.config/opencode/commands/   (Linux/macOS)
+           %APPDATA%\opencode\commands\  (Windows)
+- Project: .opencode/commands/
+
+Two formats are supported (JSON and Markdown share one registry):
+
+A) Markdown command files (.md only; .mdx is NOT discovered):
+   .opencode/commands/test.md
+   ---
+   description: Run tests with coverage
+   agent: build
+   model: anthropic/claude-3-5-sonnet-20241022
+   ---
+   Run the full test suite with coverage report and show any failures.
+
+   Frontmatter fields:
+   - description : text shown with the command in autocomplete
+   - agent       : agent selected before the prompt runs.
+                   If it is a subagent, the command triggers a subagent
+                   invocation by default (disable with subtask: false)
+   - model       : model override in provider/model or provider/model#variant
+                   format
+   - subtask     : (JSON config) force a subagent invocation
+   Files may be nested, e.g. .opencode/commands/team/review.md
+   defines /team/review
+
+B) JSON configuration (in any opencode.json / opencode.jsonc):
+   {
+     "$schema": "https://opencode.ai/config.json",
+     "commands": {
+       "review": {
+         "description": "Review code for correctness and missing tests",
+         "template": "Review $ARGUMENTS.",
+         "agent": "plan",
+         "subtask": false,
+         "model": "anthropic/claude-sonnet-4-5#high"
+       }
+     }
+   }
+
+   Fields:
+   - template    : (JSON only, required) prompt template; for Markdown
+                   commands the file body supplies the template
+   - description : text shown in the TUI autocomplete
+   - agent       : agent executed for the command
+   - subtask     : boolean; forces a subagent invocation (keeps the primary
+                   context clean) even if the agent mode is "primary"
+   - model       : model override
+
+ARGUMENTS / INTERPOLATION:
+- $ARGUMENTS  : all the arguments passed to the command
+- $1, $2, ... : positional placeholders (highest-numbered present placeholder
+                consumes the rest of the arguments). Missing positions become
+                empty strings.
+- If the template has neither $N nor $ARGUMENTS, non-empty arguments are
+  appended after a blank line.
+- Shell interpolation: wrap a shell command in ! followed by backticks to
+  insert its output before the prompt is submitted, e.g.
+    ---
+    description: Review the current diff
+    ---
+    Review this diff:
+    ! `git diff --stat && git diff`
+
+NOTE: Custom commands can OVERRIDE built-in commands of the same name.
+
+------------------------------------------------------------
+3. RELATED: "@" FILE REFERENCES AND "!" SHELL COMMANDS
+------------------------------------------------------------
+
+The "/" prefix is not the only special syntax in the OpenCode composer:
+
+- @file  : fuzzy file search; the file content is added to the conversation
+           automatically, e.g. "How is auth handled in @src/api/index.ts?"
+           Configured references also appear in @ autocomplete; type @alias to
+           add the reference root or @alias/ to autocomplete files inside it.
+- !cmd   : run a shell command and add its output to the conversation as a
+           tool result, e.g. "!ls -la"
+
+------------------------------------------------------------
+4. DEFAULT KEYBOARD SHORTCUTS (leader key: ctrl+x)
+------------------------------------------------------------
+
+ctrl+x c  /compact     ctrl+x i  /init
+ctrl+x e  /editor      ctrl+x l  /sessions
+ctrl+x m  /models      ctrl+x n  /new
+ctrl+x q  /exit        ctrl+x r  /redo
+ctrl+x t  /themes      ctrl+x u  /undo
+ctrl+x x  /export      ctrl+x h  /help
+ctrl+p                    command palette (search commands/settings)
+ctrl+t                    cycle model variants (toggle actual reasoning)
+
+Keybinds are customizable in tui.json under the "keybinds" key.
+
+------------------------------------------------------------
+5. ALSO RELATED: THE OPENCODE CLI (no slash)
+------------------------------------------------------------
+
+The "opencode" CLI itself accepts subcommands WITHOUT a slash (type them in
+the shell): tui, run, serve, web, agent, auth, models, session, stats,
+export, import, github, pr, mcp, db, debug, attach, acp, plugin, uninstall,
+upgrade. Run "opencode <command> --help" for their options. Slash commands
+above are used INSIDE the TUI.
+
+------------------------------------------------------------
+6. REFERENCES
+------------------------------------------------------------
+
+- TUI docs (slash commands):  https://opencode.ai/docs/tui
+- Custom commands:            https://opencode.ai/docs/commands
+- CLI docs:                   https://opencode.ai/docs/cli
+- Keybinds:                   https://opencode.ai/docs/keybinds
+- Rules (AGENTS.md):          https://opencode.ai/docs/rules
+- Share:                      https://opencode.ai/docs/share
