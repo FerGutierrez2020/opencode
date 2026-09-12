@@ -39,3 +39,7 @@ provider API key.
 ## Slash commands reference (visual)
 
 ![opencode slash commands reference](opencode-slash-commands.png)
+
+---
+
+*Author: Fer Gutierrez, SageITTraining using OpenCode*
